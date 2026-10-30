@@ -56,7 +56,14 @@ in `DEPLOYMENT_REPORT.md`.
 # Published evidence update
 
 The default dashboard now loads the public datasets and complete IPU coverage
-views documented in `PUBLISHED_DATA.md`. The build packages 15 application/data
+views documented in `PUBLISHED_DATA.md`. The build packages 16 application/data
 files. Historical 2024 observations, undated HHC profiles, 2025–2054 planning
 gaps, browser-local imports and existing synthetic simulations remain distinct.
 No server-side storage or new hosting service was introduced.
+
+The default Overview displays selected-cluster summary cards and independent
+activity/capacity rankings. Public annual views lead with ranked charts and keep
+the complete annual table/export available. IPU coverage uses a labelled status
+grid, source comparisons use separate grouped bars, and simulation/import views
+offer heatmaps and yearly trends. No calculation, source record or data-gap rule
+was changed by the presentation update.

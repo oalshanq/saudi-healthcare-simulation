@@ -11,6 +11,7 @@ OUT = ROOT / 'dist'
 SOURCE_FILES = ['app.py', 'dashboard.py', 'aco_sim/__init__.py', 'aco_sim/model.py',
                 'aco_sim/cluster_planning.py', 'aco_sim/cluster_dashboard.py',
                 'aco_sim/published_data.py', 'aco_sim/published_dashboard.py',
+                'aco_sim/presentation.py',
                 'data/pathways.csv', 'data/clusters.csv', 'browser_entry.py',
                 'data/published_observations.csv', 'data/hhc_capacity_snapshots.csv',
                 'data/published_reconciliation.csv', 'data/published_sources.json']
@@ -69,7 +70,8 @@ def build():
         entrypoint:'browser_entry.py',
         files,
         requirements:['numpy', 'pandas', 'plotly==6.3.0'],
-        streamlitConfig:{'client.toolbarMode':'viewer', 'theme.primaryColor':'#126e63'}
+        streamlitConfig:{'client.toolbarMode':'viewer', 'theme.base':'light', 'theme.primaryColor':'#147D73',
+          'theme.backgroundColor':'#F7F9FA','theme.secondaryBackgroundColor':'#EDF2F3','theme.textColor':'#213D44'}
       }, root);
     } catch (error) {
       root.textContent = '';

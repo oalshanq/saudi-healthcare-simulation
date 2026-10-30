@@ -4,6 +4,7 @@ import streamlit as st
 from .cluster_planning import clusters, ipus, ROOT
 from .published_data import (observations, snapshots, source_comparison, portfolio,
                              complete_ipu_demand, annual_observations, gap_register, CONTEXT)
+from .presentation import ranking, source_figure, coverage_figure, TEAL, BLUE
 
 NAMES = {'cluster_name':'Cluster', 'cluster_id':'Cluster ID', 'year':'Year', 'period':'Reporting period',
          'metric':'Measure', 'value':'Published value', 'unit':'Unit', 'status':'Status',
@@ -35,18 +36,25 @@ def annual_view(metric, cluster_ids, years):
     frame = annual_observations(metric, cluster_ids, [2024, *years])
     frame.index = [clusters().set_index('cluster_id').loc[c, 'cluster_name'] for c in frame.index]
     frame.index.name = 'Cluster'
-    st.caption('2024 is a historical observation. The planning horizon remains 2025–2054. '
-               'Blank future cells are unavailable; no observation has been carried forward as a forecast.')
-    st.dataframe(frame, use_container_width=True, height=550)
+    data=observations()
+    selected=data[data.metric.eq(metric)&data.cluster_id.isin(cluster_ids)]
+    panels=st.tabs(['Compare clusters','Annual table'])
+    with panels[0]:
+        st.subheader(metric+' · 2024')
+        st.caption('Reported volumes, largest first. Hover for exact values. This compares scale, not performance or population-adjusted need.')
+        ranking(selected,metric,selected.unit.iloc[0],key='rank_'+metric)
+    with panels[1]:
+        st.caption('2024 is historical. Blank 2025–2054 planning cells are unavailable, not zero; no actuals are projected forward.')
+        st.dataframe(frame, use_container_width=True, height=550)
     download('Download observed and planning years', frame.reset_index(), 'published_annual_cluster.csv')
 
 
 def portfolio_view(cluster_ids, years):
     st.header('All 26 IPUs: evidence and unresolved gaps')
     a,b,c=st.columns(3)
-    a.metric('IPU modules and import coverage', '26 / 26')
-    b.metric('IPUs with validated coded activity loaded', '0 / 26')
-    c.metric('IPUs with verified capacity allocations', '0 / 26')
+    a.metric('IPUs supported', '26 / 26')
+    b.metric('Validated coded activity', '0 / 26')
+    c.metric('Verified IPU allocations', '0 / 26')
     st.caption('All ten previously unmodelled IPUs now have explicit annual coverage, pathway references, '
                'evidence links and data requirements. Their rates remain unavailable. '
                'The original 16 synthetic profiles are preserved; they are not validated clinical models.')
@@ -54,7 +62,13 @@ def portfolio_view(cluster_ids, years):
     system=st.selectbox('Portfolio System of Care', ['All Systems of Care', *ipus().system.unique()])
     if system != 'All Systems of Care':
         inventory=inventory[inventory.system.eq(system)]
-    table(inventory[['system','ipu','legacy_model','related_indicators']], height=450)
+    st.caption('Green: pathway defined · Amber: related context or unvalidated simulation · Grey: unavailable. '
+               'Context and synthetic profiles do not establish coded activity or operational capacity.')
+    st.plotly_chart(coverage_figure(inventory),use_container_width=True,config={'displaylogo':False})
+    with st.expander('IPU inventory and evidence descriptions'):
+        table(inventory[['system','ipu','legacy_model','related_indicators']], height=450)
+    st.divider()
+    st.subheader('Explore an IPU')
     selected=st.selectbox('IPU evidence detail', inventory.ipu.tolist())
     row=inventory[inventory.ipu.eq(selected)].iloc[0]
     st.write('**Pathways:** '+row.pathways)
@@ -71,7 +85,10 @@ def portfolio_view(cluster_ids, years):
         st.info('Related service evidence only. These are published service/facility counts, not coded IPU demand '
                 'or capacity allocated to the IPU. This association is proposed and indicators may overlap.')
         metric=st.selectbox('Related indicator', sorted(related.metric.unique()))
-        table(evidence_rows(related[related.metric.eq(metric)]),height=350)
+        subset=related[related.metric.eq(metric)]
+        ranking(subset,metric,subset.unit.iloc[0],key='ipu_related')
+        with st.expander('Related source records'):
+            table(evidence_rows(subset),height=350)
     st.subheader('Annual IPU coverage')
     focus=st.selectbox('Coverage year', years)
     missing=complete_ipu_demand(pd.DataFrame(),cluster_ids,[focus],'Inpatient','Observed activity')
@@ -143,7 +160,9 @@ def supply_view(cluster_ids,years):
         metric=st.selectbox('HHC profile measure',['Hospital beds','Hospitals','Primary healthcare centres','Specialized centres'])
         subset=snapshots()
         subset=subset[subset.metric.eq(metric)&subset.cluster_id.isin(cluster_ids)]
-        table(evidence_rows(subset),height=550)
+        ranking(subset,metric,subset.unit.iloc[0],key='hhc_rank',color='#A76516')
+        with st.expander('HHC profile records'):
+            table(evidence_rows(subset),height=550)
         download('Download undated HHC profile records',subset,'hhc_undated_capacity.csv')
     with tabs[2]:
         group=st.radio('Organisational evidence',['IPUs','Networks','Platforms'],horizontal=True)
@@ -165,9 +184,12 @@ def supply_view(cluster_ids,years):
         download('Download organisational capacity gaps',gaps,'organisational_capacity_gaps.csv')
     with tabs[3]:
         compare=source_comparison()
-        table(compare[compare.cluster_id.isin(cluster_ids)],height=550)
+        subset=compare[compare.cluster_id.isin(cluster_ids)]
         st.caption('Values are shown side by side, not as a trend or net change. Scope, definitions and the HHC reporting date '
                    'need reconciliation. No source silently overwrites another.')
+        st.plotly_chart(source_figure(subset),use_container_width=True,config={'displaylogo':False})
+        with st.expander('Source comparison table'):
+            table(subset,height=550)
         download('Download capacity source comparison',compare[compare.cluster_id.isin(cluster_ids)],'capacity_source_comparison.csv')
 
 
@@ -175,7 +197,7 @@ def sources_view():
     st.header('Published sources and unresolved data gaps')
     st.markdown('[MoH 2024 statistical workbook](https://www.moh.gov.sa/en/Ministry/Statistics/book/Documents/Statistical-Yearbook-2024.xlsx) '
                 '· [Health Holding cluster profiles](https://www.health.sa/en/clusters/list)')
-    st.write('780 observations cover 39 measures across all 20 clusters for 2024. '
+    st.write('780 source records cover 39 measures across all 20 clusters for 2024, including one missing source value. '
              'A further 80 undated HHC profile values are kept separate. Each record has a source, table/cell or profile, '
              'reporting period, retrieval date and scope note. Facility categories and activity measures can overlap and are not added together.')
     checks=pd.read_csv(ROOT/'data/published_reconciliation.csv')
@@ -198,8 +220,9 @@ def sources_view():
 
 
 def render_published(view,cluster_ids,years):
-    st.caption('PUBLIC EVIDENCE · MoH 2024 observations and separately dated HHC retrievals. No synthetic values mixed into published figures.')
-    if view=='Yearly cluster demand':
+    if view=='Overview':
+        overview(cluster_ids,years)
+    elif view=='Yearly cluster demand':
         demand_view(cluster_ids,years)
     elif view=='Yearly cluster supply':
         supply_view(cluster_ids,years)
@@ -207,3 +230,43 @@ def render_published(view,cluster_ids,years):
         portfolio_view(cluster_ids,years)
     else:
         sources_view()
+
+
+def overview(cluster_ids,years):
+    st.header('Cluster overview')
+    st.caption('MoH facilities · 2024 reported activity and inventory · Selected clusters only')
+    data=observations()
+    selected=data[data.cluster_id.isin(cluster_ids)]
+    cards=st.columns(3)
+    for card,metric,label in zip(cards,['Hospital admissions','Hospital outpatient encounters','Hospital beds'],
+                                 ['Hospital admissions','Outpatient encounters','Reported hospital beds']):
+        total=selected.loc[selected.metric.eq(metric),'value'].sum(min_count=1)
+        card.metric(label,f'{total:,.0f}' if pd.notna(total) else 'Unavailable')
+    st.info('Published totals are available for all 20 clusters. DRG / ICD-10-AM detail and effective, allocated capacity remain unavailable.')
+    left,right=st.columns(2)
+    with left:
+        st.subheader('Activity by cluster')
+        metric=st.selectbox('Overview activity',['Hospital admissions','Hospital outpatient encounters','PHC encounters and consultations'],label_visibility='collapsed')
+        subset=selected[selected.metric.eq(metric)]
+        st.caption(metric+' · 2024')
+        ranking(subset,metric,subset.unit.iloc[0],key='overview_activity')
+    with right:
+        st.subheader('Capacity by cluster')
+        metric=st.selectbox('Overview capacity',['Hospital beds','Primary healthcare centres','Emergency department beds'],label_visibility='collapsed')
+        subset=selected[selected.metric.eq(metric)]
+        st.caption(metric+' · 2024')
+        ranking(subset,metric,subset.unit.iloc[0],key='overview_capacity',color=BLUE)
+    st.caption('Charts show scale, not performance. Measures have different units and must not be added. '
+               'Reported beds do not establish staffing or availability.')
+    st.subheader('Evidence at a glance')
+    status=pd.DataFrame([
+        ['Cluster activity & inventory','2024 · 20 clusters','Published'],
+        ['HHC capacity profiles','Reporting year unspecified','Separate snapshot'],
+        ['Reference IPU portfolio','26 IPUs · 49 pathways','Defined'],
+        ['Cluster DRG / ICD-10-AM activity','No usable extract found','Unavailable'],
+        ['IPU / Network / Platform allocations','No verified register found','Unavailable'],
+        [f'{years[0]}–{years[-1]} planning inputs','Future actuals and calibrated rates','Unavailable'],
+    ],columns=['Evidence','Coverage','Status'])
+    table(status)
+    st.caption('Use the left navigation for annual demand, supply, IPU coverage, source details or the preserved simulation. '
+               'Change the cluster selection to update every chart on this page.')

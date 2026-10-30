@@ -87,11 +87,24 @@ def _matrix(df, value, cluster_ids, years, title, unit):
     st.subheader(title)
     st.caption(f'{unit}. Blank cells mean no records for that cluster/year in this selection; they do not mean zero.')
     if matrix.notna().any().any():
-        fig = px.imshow(matrix, aspect='auto', color_continuous_scale='Teal',
-                        labels={'x': 'Year', 'y': 'Cluster', 'color': unit}, height=max(280, len(cluster_ids) * 22 + 140))
-        fig.update_xaxes(dtick=1)
-        st.plotly_chart(fig, use_container_width=True)
-    st.dataframe(matrix, use_container_width=True, height=min(750, len(cluster_ids) * 35 + 50))
+        from .presentation import base, trend_figure, short
+        charts=st.tabs(['Cluster heatmap','Yearly trends','Values'])
+        with charts[0]:
+            visual=matrix.copy()
+            visual.index=visual.index.map(short)
+            fig = px.imshow(visual, aspect='auto', color_continuous_scale='Teal',
+                            labels={'x': 'Year', 'y': 'Cluster', 'color': unit})
+            base(fig,max(300,len(cluster_ids)*25+120))
+            fig.update_xaxes(dtick=5 if len(years)>10 else 1)
+            st.plotly_chart(fig, use_container_width=True,config={'displaylogo':False})
+        with charts[1]:
+            st.caption('Use the legend to isolate a cluster. Missing years are not connected. Capacity snapshots are not summed across years.')
+            st.plotly_chart(trend_figure(matrix,unit),use_container_width=True,config={'displaylogo':False})
+        with charts[2]:
+            st.dataframe(matrix, use_container_width=True, height=min(750, len(cluster_ids) * 35 + 50))
+    else:
+        st.info('No records for this selection. Choose another resource, period or data source.')
+        st.dataframe(matrix,use_container_width=True,height=250)
     _download('Download year-by-cluster table', matrix.reset_index(),
               'annual_cluster_' + ('demand' if value == 'volume' else 'supply') + '.csv')
 
@@ -316,9 +329,15 @@ Allocation fractions range from 0 to 1; their sum per asset must not exceed 1. M
 
 
 def render(view):
-    st.title('Saudi ACO annual cluster planning')
-    st.caption('Demand by System of Care and IPU · Supply by IPU, Network and Platform · 2025–2054')
-    mode = st.sidebar.radio('Data source', ['Published cluster evidence', 'Existing project simulation', 'Import annual CSVs'])
+    st.title('Saudi ACO supply & demand')
+    st.caption('Compare clusters. Explore service capacity. Track the evidence still needed.')
+    if view in ['Overview','IPU coverage & gaps']:
+        mode='Published cluster evidence'
+        st.sidebar.caption('This view summarises published evidence. Open demand or supply to choose a simulation or import.')
+    else:
+        mode = st.sidebar.radio('Data source', ['Published cluster evidence', 'Existing project simulation', 'Import annual CSVs'])
+    st.sidebar.divider()
+    st.sidebar.markdown('**Planning scope**')
     start, end = st.sidebar.slider('Year range', 2025, 2054, (2025, 2054))
     years = list(range(start, end + 1))
     focus = (st.sidebar.select_slider('Detail year', options=years, value=years[0])
@@ -327,7 +346,9 @@ def render(view):
     names = clusters().set_index('cluster_id').cluster_name.to_dict()
     cluster_ids = st.sidebar.multiselect('Clusters (empty = all 20)', list(names), format_func=names.get)
     cluster_ids = cluster_ids or list(names)
-    if mode == 'Published cluster evidence' or view == 'IPU coverage & gaps':
+    from .presentation import context
+    context(mode,len(cluster_ids),years)
+    if mode == 'Published cluster evidence':
         from .published_dashboard import render_published
         if view == 'IPU coverage & gaps' and mode != 'Published cluster evidence':
             st.info('This coverage review describes the bundled public evidence. Imported/synthetic records are shown in the annual demand and supply views.')
