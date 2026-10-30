@@ -1,0 +1,50 @@
+system,ipu,pathway_id
+Keep Well,"Population Health, Screening and Immunisation",CP-KW-01
+Keep Well,"Population Health, Screening and Immunisation",CP-KW-02
+Keep Well,"Population Health, Screening and Immunisation",CP-KW-03
+Keep Well,"Population Health, Screening and Immunisation",CP-KW-04
+Keep Well,Oral and Dental Health,CP-KW-05
+Urgent Care,Emergency and Acute Assessment,CP-UC-01
+Urgent Care,Emergency and Acute Assessment,CP-UC-07
+Urgent Care,Acute Medicine and Same-Day Emergency Care,CP-UC-02
+Urgent Care,Acute Coronary Syndrome,CP-UC-03
+Urgent Care,Stroke,CP-UC-04
+Urgent Care,Major Trauma,CP-UC-05
+Urgent Care,Paediatric Medicine,CP-UC-06
+Planned Care,Joint Replacement,CP-PC-01
+Planned Care,Cancer,CP-PC-02
+Planned Care,Cardiac Intervention and Surgery,CP-PC-03
+Planned Care,Spine,CP-PC-04
+Planned Care,Cataract and Ophthalmic Surgery,CP-PC-05
+Planned Care,General and Bariatric Surgery,CP-PC-06
+Planned Care,General and Bariatric Surgery,CP-PC-09
+Planned Care,Urology,CP-PC-07
+Planned Care,ENT and Head-and-Neck,CP-PC-08
+Chronic Care,Cardiometabolic,CP-CC-01
+Chronic Care,Cardiometabolic,CP-CC-10
+Chronic Care,Cardiometabolic,CP-CC-11
+Chronic Care,Cardiometabolic,CP-CC-12
+Chronic Care,Cardiometabolic,CP-CC-13
+Chronic Care,Heart Failure,CP-CC-02
+Chronic Care,Respiratory,CP-CC-03
+Chronic Care,Respiratory,CP-CC-08
+Chronic Care,Respiratory,CP-CC-09
+Chronic Care,Musculoskeletal and Rheumatology,CP-CC-04
+Chronic Care,Musculoskeletal and Rheumatology,CP-CC-14
+Chronic Care,Frailty and Complex Multimorbidity,CP-CC-05
+Chronic Care,Neurological Long-Term Conditions,CP-CC-06
+Chronic Care,Renal and Dialysis,CP-CC-07
+Safe Birth,Maternity and Neonatal,CP-SB-01
+Safe Birth,Maternity and Neonatal,CP-SB-02
+Safe Birth,Maternity and Neonatal,CP-SB-03
+Palliative Care,Palliative and End of Life,CP-LP-01
+Palliative Care,Palliative and End of Life,CP-LP-02
+Palliative Care,Palliative and End of Life,CP-LP-03
+Mental Health,Mental Health,CP-MH-01
+Mental Health,Mental Health,CP-MH-02
+Mental Health,Mental Health,CP-MH-03
+Mental Health,Mental Health,CP-MH-04
+Mental Health,Mental Health,CP-MH-05
+Mental Health,Mental Health,CP-MH-06
+Mental Health,Mental Health,CP-MH-07
+Mental Health,Mental Health,CP-MH-08
