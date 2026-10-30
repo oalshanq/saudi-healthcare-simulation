@@ -130,6 +130,7 @@ def _demand(raw, mapping, cluster_ids, years, focus):
         edition = st.selectbox('Coding edition', ['All editions — disjoint records only', *editions])
     if edition != 'All editions — disjoint records only':
         selected = selected[selected.edition.eq(edition)]
+    coverage_data = selected.copy()
     with st.expander('Coding and count definitions'):
         st.caption('Inpatient admissions group by DRG; outpatient encounters group by primary ICD-10-AM diagnosis. '
                    'The volumes are separate. Observed activity records delivered care, not all unmet need. '
@@ -164,6 +165,13 @@ def _demand(raw, mapping, cluster_ids, years, focus):
         if not unmodeled.empty:
             with st.expander('Reference IPUs without records in this dataset'):
                 _table(unmodeled)
+        from .published_data import complete_ipu_demand
+        complete = complete_ipu_demand(coverage_data, cluster_ids, years, setting, series)
+        with st.expander('Complete 26-IPU annual coverage, including missing records'):
+            st.caption('All reference IPUs in the selected clusters and years; independent of the System/IPU filter above. '
+                       'Missing volumes remain blank. Unmapped codes remain in the coded-detail export.')
+            _table(complete[complete.year.eq(focus)], height=500)
+        _download('Download complete 26-IPU annual demand coverage', complete, 'complete_ipu_demand_coverage.csv')
         _download('Download annual demand by System of Care and IPU',
                   selected.groupby(['year', 'cluster_id', 'cluster_name', 'setting', 'series', 'system', 'ipu', 'mapping_status'], as_index=False).volume.sum(),
                   'annual_cluster_system_ipu_demand.csv')
@@ -310,13 +318,21 @@ Allocation fractions range from 0 to 1; their sum per asset must not exceed 1. M
 def render(view):
     st.title('Saudi ACO annual cluster planning')
     st.caption('Demand by System of Care and IPU · Supply by IPU, Network and Platform · 2025–2054')
-    mode = st.sidebar.radio('Data source', ['Existing project simulation', 'Import annual CSVs'])
+    mode = st.sidebar.radio('Data source', ['Published cluster evidence', 'Existing project simulation', 'Import annual CSVs'])
     start, end = st.sidebar.slider('Year range', 2025, 2054, (2025, 2054))
     years = list(range(start, end + 1))
-    focus = st.sidebar.select_slider('Detail year', options=years, value=years[0]) if len(years) > 1 else years[0]
+    focus = (st.sidebar.select_slider('Detail year', options=years, value=years[0])
+             if len(years) > 1 and mode != 'Published cluster evidence' and view != 'IPU coverage & gaps'
+             else years[0])
     names = clusters().set_index('cluster_id').cluster_name.to_dict()
     cluster_ids = st.sidebar.multiselect('Clusters (empty = all 20)', list(names), format_func=names.get)
     cluster_ids = cluster_ids or list(names)
+    if mode == 'Published cluster evidence' or view == 'IPU coverage & gaps':
+        from .published_dashboard import render_published
+        if view == 'IPU coverage & gaps' and mode != 'Published cluster evidence':
+            st.info('This coverage review describes the bundled public evidence. Imported/synthetic records are shown in the annual demand and supply views.')
+        render_published(view, cluster_ids, years)
+        return
     integrated, seed = True, 42
     if mode == 'Existing project simulation':
         integrated = st.sidebar.checkbox('ACO integrated-care demand scenario', value=True)

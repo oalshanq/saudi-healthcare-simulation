@@ -10,7 +10,10 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'dist'
 SOURCE_FILES = ['app.py', 'dashboard.py', 'aco_sim/__init__.py', 'aco_sim/model.py',
                 'aco_sim/cluster_planning.py', 'aco_sim/cluster_dashboard.py',
-                'data/pathways.csv', 'data/clusters.csv', 'browser_entry.py']
+                'aco_sim/published_data.py', 'aco_sim/published_dashboard.py',
+                'data/pathways.csv', 'data/clusters.csv', 'browser_entry.py',
+                'data/published_observations.csv', 'data/hhc_capacity_snapshots.csv',
+                'data/published_reconciliation.csv', 'data/published_sources.json']
 
 def build():
     OUT.mkdir(exist_ok=True)
@@ -48,7 +51,7 @@ def build():
   <div id="root"><div id="loading" role="status">
     <h1>Saudi ACO Supply–Demand Simulation</h1>
     <p>Preparing your simulation workspace. The first visit downloads the calculation tools and may take a minute.</p>
-    <p>Research prototype · Synthetic, unvalidated inputs</p>
+    <p>Published cluster evidence · Explicit data gaps · Separate synthetic scenarios</p>
     <p>Your calculations run in this browser. Download any results you want to keep before closing the page.</p>
   </div></div>
   <noscript>Enable JavaScript to run this interactive simulation.</noscript>
@@ -89,6 +92,7 @@ def build():
                   if f.is_file() and '__pycache__' not in f.parts and f.suffix in ['.py', '.csv', '.txt', '.md']]
         for name in SOURCE_FILES + extra + ['requirements.txt', 'README.md', 'tests/test_model.py',
                                     'tests/test_cluster_planning.py', 'CLUSTER_PLANNING.md',
+                                    'tests/test_published_data.py', 'PUBLISHED_DATA.md', 'scripts/extract_official_data.py',
                                     'SOURCE_INTEGRITY.json', 'scripts/build_site.py', 'netlify.toml', 'DEPLOYMENT.md']:
             bundle.write(ROOT / name, name)
     print(f'Packaged {len(SOURCE_FILES)} application and data files in {OUT}')

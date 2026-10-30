@@ -4,7 +4,7 @@ import streamlit as st
 
 st.set_page_config(page_title='Saudi ACO Annual Cluster Planning', layout='wide')
 view = st.sidebar.radio('View', ['Yearly cluster demand', 'Yearly cluster supply',
-                                 'Data & mappings', 'Regional prototype'])
+                                 'IPU coverage & gaps', 'Data & mappings', 'Regional prototype'])
 if view == 'Regional prototype':
     runpy.run_path('app.py', run_name='__main__')
 else:

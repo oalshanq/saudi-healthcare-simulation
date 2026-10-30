@@ -53,3 +53,10 @@ production branch `main`, the root `netlify.toml`, and publish directory `dist`.
 Verify the live dashboard, charts, filters, pathway catalogue, CSV export and
 served file hashes after deployment. Deployment-specific results are recorded
 in `DEPLOYMENT_REPORT.md`.
+# Published evidence update
+
+The default dashboard now loads the public datasets and complete IPU coverage
+views documented in `PUBLISHED_DATA.md`. The build packages 15 application/data
+files. Historical 2024 observations, undated HHC profiles, 2025–2054 planning
+gaps, browser-local imports and existing synthetic simulations remain distinct.
+No server-side storage or new hosting service was introduced.

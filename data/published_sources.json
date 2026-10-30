@@ -1,0 +1,19 @@
+{
+  "retrieved_on": "2026-10-31",
+  "inputs": [
+    {
+      "filename": "moh-yearbook-2024.xlsx",
+      "url": "https://www.moh.gov.sa/en/Ministry/Statistics/book/Documents/Statistical-Yearbook-2024.xlsx",
+      "sha256": "959a27fbe4a7ef7b5726c679303d3251aea8b638370289b8d055705e53ea2649"
+    },
+    {
+      "filename": "hhc-clusters.html",
+      "url": "https://www.health.sa/en/clusters/list",
+      "sha256": "1611fc6ece49e9b0248e4e35e5c2155d93ac7d2d9ce731a19beb72d49603e0af"
+    }
+  ],
+  "observation_count": 780,
+  "hhc_snapshot_count": 80,
+  "extraction": "scripts/extract_official_data.py; exact source cells; all metrics reconcile to national controls",
+  "cluster_crosswalk": "Use whole-cluster totals for Makkah/Asir/Al Jouf; exclude their component rows and multi-cluster Riyadh/Jeddah totals."
+}

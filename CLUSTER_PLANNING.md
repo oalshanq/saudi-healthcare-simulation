@@ -1,5 +1,15 @@
 # Annual cluster planning views
 
+## Published evidence update — 31 October 2026
+
+The default source is now **Published cluster evidence**. It includes MoH 2024
+activity and capacity observations for all 20 clusters, separate undated HHC
+profiles, all 26 IPU coverage modules and explicit unresolved gaps. See
+`PUBLISHED_DATA.md` for exact scope, provenance and reconciliation. The original
+synthetic scenario and annual CSV imports described below remain available.
+Actual cluster DRG/ICD-10-AM extracts, approved IPU crosswalks, operational
+capacity and allocation agreements remain unavailable in the bundled evidence.
+
 ## What is shown
 
 The new default workspace has annual cluster demand, annual cluster supply and

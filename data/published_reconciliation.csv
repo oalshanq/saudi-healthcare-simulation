@@ -1,0 +1,40 @@
+metric,source_table,cluster_sum,published_total,source_unassigned,reported_clusters,missing_clusters
+Hospital beds,2-7,46905,46905,0,20,0
+Hospitals,2-7,290,290,0,20,0
+Hospital admissions,4-22,1876723,1876723,0,20,0
+Hospital outpatient encounters,4-5,16796225,16796225,0,20,0
+PHC encounters and consultations,4-1,41258833,41275616,16783,20,0
+Medical emergency encounters,4-3,13760506,13760506,0,20,0
+Surgical emergency encounters,4-4,2247114,2247114,0,20,0
+Diabetes clinic encounters,4-16,620742,620742,0,20,0
+Primary healthcare centres,2-4,2172,2172,0,20,0
+Cardiology centres,2-4,12,12,0,20,0
+Oncology centres,2-4,18,18,0,20,0
+Diabetes and endocrinology centres,2-4,31,31,0,20,0
+Dialysis centres / units,2-4,225,225,0,20,0
+Dental centres,2-4,44,44,0,20,0
+Rehabilitation centres,2-4,11,11,0,20,0
+Central / regional laboratories,2-4,17,17,0,19,1
+General beds,2-9,564,564,0,20,0
+Medicine beds,2-9,11461,11461,0,20,0
+Surgery beds,2-9,10458,10458,0,20,0
+Obstetric / gynaecology beds,2-9,4998,4998,0,20,0
+Paediatric beds,2-9,4756,4756,0,20,0
+Intensive care beds,2-9,6908,6908,0,20,0
+Psychiatry / neurology beds,2-9,4843,4843,0,20,0
+Isolation beds,2-9,2917,2917,0,20,0
+Neonatal ICU beds,2-12,2425,2425,0,20,0
+Paediatric ICU beds,2-12,864,864,0,20,0
+Adult ICU beds,2-12,3619,3619,0,20,0
+Emergency department beds,2-13,5060,5060,0,20,0
+General surgery interventions,4-36,153702,153702,0,20,0
+Cardiac / chest / vascular interventions,4-36,16500,16500,0,20,0
+Urology interventions,4-36,52517,52517,0,20,0
+Plastic surgery interventions,4-36,19039,19039,0,20,0
+Orthopaedic interventions,4-36,75770,75770,0,20,0
+ENT interventions,4-36,68115,68115,0,20,0
+Faciodental interventions,4-36,29415,29415,0,20,0
+Paediatric surgery interventions,4-36,32783,32783,0,20,0
+Obstetric / gynaecology interventions,4-36,121749,121749,0,20,0
+Ophthalmology interventions,4-36,86573,86573,0,20,0
+Neurosurgery interventions,4-36,12381,12381,0,20,0
