@@ -8,7 +8,9 @@ import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'dist'
-SOURCE_FILES = ['app.py', 'aco_sim/__init__.py', 'aco_sim/model.py', 'data/pathways.csv', 'browser_entry.py']
+SOURCE_FILES = ['app.py', 'dashboard.py', 'aco_sim/__init__.py', 'aco_sim/model.py',
+                'aco_sim/cluster_planning.py', 'aco_sim/cluster_dashboard.py',
+                'data/pathways.csv', 'data/clusters.csv', 'browser_entry.py']
 
 def build():
     OUT.mkdir(exist_ok=True)
@@ -31,8 +33,8 @@ def build():
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Saudi ACO supply–demand research prototype. Synthetic population, pathway and capacity simulation.">
-  <title>Saudi ACO Supply–Demand Simulation</title>
+  <meta name="description" content="Annual Saudi cluster demand by System of Care and IPU, and supply by IPU, Network and Platform. Explicit data sources and assumptions.">
+  <title>Saudi ACO Annual Cluster Planning</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/browser@1.12.0/build/stlite.css">
   <style>
     body { margin:0; font-family:system-ui,sans-serif; color:#123d39; background:#f8faf9; }
@@ -77,11 +79,19 @@ def build():
 </body>
 </html>
 ''')
+    templates = OUT / 'templates'
+    templates.mkdir(exist_ok=True)
+    for file in (ROOT / 'data/templates').glob('*.csv'):
+        shutil.copyfile(file, templates / file.name)
     with zipfile.ZipFile(OUT / 'saudi-aco-simulation-source.zip', 'w', zipfile.ZIP_DEFLATED) as bundle:
-        for name in SOURCE_FILES + ['requirements.txt', 'README.md', 'tests/test_model.py',
-                                    'scripts/build_site.py', 'netlify.toml', 'DEPLOYMENT.md']:
+        extra = [str(f.relative_to(ROOT)) for f in (ROOT / 'data/templates').glob('*.csv')]
+        extra += [str(f.relative_to(ROOT)) for f in (ROOT / 'legacy').rglob('*')
+                  if f.is_file() and '__pycache__' not in f.parts and f.suffix in ['.py', '.csv', '.txt', '.md']]
+        for name in SOURCE_FILES + extra + ['requirements.txt', 'README.md', 'tests/test_model.py',
+                                    'tests/test_cluster_planning.py', 'CLUSTER_PLANNING.md',
+                                    'SOURCE_INTEGRITY.json', 'scripts/build_site.py', 'netlify.toml', 'DEPLOYMENT.md']:
             bundle.write(ROOT / name, name)
-    print(f'Built {len(SOURCE_FILES)} unchanged application files in {OUT}')
+    print(f'Packaged {len(SOURCE_FILES)} application and data files in {OUT}')
 
 if __name__ == '__main__':
     build()

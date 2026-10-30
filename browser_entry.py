@@ -22,4 +22,4 @@ def browser_download(label, data, file_name='download.csv', mime='text/csv', **k
 
 
 st.download_button = browser_download
-runpy.run_path('app.py', run_name='__main__')
+runpy.run_path('dashboard.py', run_name='__main__')

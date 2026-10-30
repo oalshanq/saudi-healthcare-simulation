@@ -12,14 +12,16 @@ GitHub stores the complete source. Netlify builds the static distribution with
 original Streamlit application and NumPy/Pandas model inside each visitor's
 browser through Pyodide. Plotly 6.3.0 is pinned for the browser runtime.
 
-`browser_entry.py` adapts the original CSV download into a browser data-URI link,
+`browser_entry.py` opens `dashboard.py` and adapts CSV downloads into browser data-URI links,
 because a browser-only deployment has no persistent Streamlit `/media` endpoint.
-The exported bytes are the exact CSV supplied by `app.py`; calculations and the
-original Python source are unchanged. Native server hosting uses `app.py` directly.
+The exported bytes are the exact CSV supplied by the views. The original
+`app.py` and `aco_sim/model.py` remain unchanged and are accessible through
+the Regional prototype selector. Native hosting for the current workspace uses
+`streamlit run dashboard.py`; `streamlit run app.py` still opens the original view.
 
-This is the interactive application, not precomputed dashboard images. The same
-`app.py` and `aco_sim/model.py` also support ordinary Python server hosting using
-`streamlit run app.py`.
+The current workspace adds yearly cluster demand/supply views, CSV imports and
+capacity allocation reconciliation. See `CLUSTER_PLANNING.md` for data scope,
+source reuse and assumptions. It remains an interactive Python application.
 
 No persistent Python server, database, API key or paid compute service is needed
 for this prototype. The browser runtime and packages load from public CDNs;
@@ -29,8 +31,10 @@ simulation size. Refreshing clears session results; CSV downloads preserve them.
 
 `manifest.json` records SHA-256 hashes of all deployed Python/data files. The
 deployment does not add a full DES engine, calibrated data, real ACO attribution,
-DALYs or new clinical capabilities. The model's synthetic supply is derived from
-demand, so scenario comparisons do not hold an independent observed supply fixed.
+DALYs or new clinical capabilities. The original regional model derives synthetic
+supply from demand. The new cluster views freeze its synthetic 2025 status-quo
+supply baseline and project it independently from later demand scenarios;
+this is not observed supply.
 
 ## Build and test
 

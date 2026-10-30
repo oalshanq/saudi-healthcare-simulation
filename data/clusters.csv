@@ -1,0 +1,21 @@
+cluster_id,cluster_name,region,source,registry_note
+RYD1,Riyadh First Health Cluster,Riyadh,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+RYD2,Riyadh Second Health Cluster,Riyadh,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+RYD3,Riyadh Third Health Cluster,Riyadh,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+QAS,Qassim Health Cluster,Qassim,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+EST,Eastern Health Cluster,Eastern Province,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+AHS,Al-Ahsa Health Cluster,Eastern Province,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+HBT,Hafar Al-Batin Health Cluster,Eastern Province,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+MKH,Makkah Health Cluster,Makkah,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+MDN,Madinah Health Cluster,Madinah,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+JED1,Jeddah First Health Cluster,Makkah,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+JED2,Jeddah Second Health Cluster,Makkah,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+TAF,AlTaif Health Cluster,Makkah,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+HAI,Hail Health Cluster,Hail,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+TAB,Tabuk Health Cluster,Tabuk,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+JOF,Al-Jouf Health Cluster,Jouf,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+NBR,Northern Borders Health Cluster,Northern Borders,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+ASR,Aseer Health Cluster,Assir,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+NJR,Najran Health Cluster,Najran,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+JZN,Jazan Health Cluster,Jizan,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
+BAH,Al-Baha Health Cluster,Baha,https://www.health.sa/en/clusters/list,Application ID; names checked 2026-10-30; not a boundary or population register
