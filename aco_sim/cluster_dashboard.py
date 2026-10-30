@@ -13,6 +13,25 @@ TEMPLATES = [('Demand', DEMAND_COLUMNS), ('Code mappings', MAPPING_COLUMNS),
 LABELS = {'Beds': 'Beds', 'Physicians': 'Physician FTE', 'Nurses': 'Nurse FTE',
           'Outpatient_Clinics': 'Outpatient clinic rooms', 'Theatre_hours': 'Theatre hours',
           'Imaging_slots': 'Imaging slots', 'Laboratory_tests': 'Laboratory tests'}
+DISPLAY_NAMES = {'year': 'Year', 'cluster_id': 'Cluster ID', 'cluster_name': 'Cluster',
+                 'system': 'System of Care', 'ipu': 'IPU', 'mapping_status': 'Mapping status',
+                 'volume': 'Volume', 'series': 'Data series', 'setting': 'Service setting',
+                 'code_system': 'Classification', 'edition': 'Edition', 'code': 'Code',
+                 'source': 'Source', 'mapping_source': 'Mapping source', 'resource': 'Resource',
+                 'unit': 'Unit', 'owner_id': 'Owner ID', 'owner_name': 'Owner', 'owner_type': 'Owner type',
+                 'asset_id': 'Asset ID', 'physical_capacity': 'Physical / established',
+                 'staffed_capacity': 'Staffed', 'funded_capacity': 'Funded',
+                 'effective_capacity': 'Effective capacity', 'availability_fraction': 'Availability',
+                 'owned_capacity': 'Owned capacity', 'allocated_plus_unallocated': 'Allocated + unallocated',
+                 'difference': 'Difference', 'allocated_fraction': 'Allocation share',
+                 'allocation_source': 'Allocation source', 'region': 'Region', 'registry_note': 'Registry note'}
+
+
+def _table(df, height=None):
+    config = {DISPLAY_NAMES.get(c, c): st.column_config.NumberColumn(format='%.1f')
+              for c in df if pd.api.types.is_numeric_dtype(df[c]) and c != 'year'}
+    st.dataframe(df.rename(columns=DISPLAY_NAMES), use_container_width=True, hide_index=True,
+                 column_config=config, **({'height': height} if height else {}))
 
 
 @st.cache_data(show_spinner='Preparing annual views from the existing prototype…')
@@ -137,14 +156,14 @@ def _demand(raw, mapping, cluster_ids, years, focus):
     with tabs[1]:
         st.subheader(f'Cluster → System of Care → IPU · {focus}')
         grouped = current.groupby(['year', 'cluster_name', 'system', 'ipu', 'mapping_status'], as_index=False).volume.sum()
-        st.dataframe(grouped, use_container_width=True, height=550)
+        _table(grouped, height=550)
         modeled = set(full.loc[full.ipu.ne('Unmapped'), 'ipu'])
         unmodeled = ipus()[~ipus().ipu.isin(modeled)]
         st.caption(f'{len(modeled)} of 26 reference IPUs have records in this dataset. '
                    'Missing IPUs are not assigned invented demand or zero demand. Mental Health as a seventh System remains proposed.')
         if not unmodeled.empty:
             with st.expander('Reference IPUs without records in this dataset'):
-                st.dataframe(unmodeled, use_container_width=True)
+                _table(unmodeled)
         _download('Download annual demand by System of Care and IPU',
                   selected.groupby(['year', 'cluster_id', 'cluster_name', 'setting', 'series', 'system', 'ipu', 'mapping_status'], as_index=False).volume.sum(),
                   'annual_cluster_system_ipu_demand.csv')
@@ -152,7 +171,7 @@ def _demand(raw, mapping, cluster_ids, years, focus):
         st.subheader(f'Code and edition detail · {focus}')
         cols = ['year', 'cluster_name', 'setting', 'code_system', 'edition', 'code',
                 'system', 'ipu', 'volume', 'series', 'mapping_status', 'source', 'mapping_source']
-        st.dataframe(current[cols], use_container_width=True, height=550)
+        _table(current[cols], height=550)
         missing = selected[selected.ipu.eq('Unmapped')]
         if not missing.empty:
             st.warning(f'{len(missing):,} selected records have no exact code-and-edition mapping. '
@@ -215,7 +234,7 @@ def _supply(raw, allocations, cluster_ids, years, focus):
         absent = ipus()[~ipus().ipu.isin(reported_ipus)]
         if not absent.empty:
             with st.expander('Reference IPUs without capacity allocation records'):
-                st.dataframe(absent, use_container_width=True)
+                _table(absent)
     tabs = st.tabs(['Year by cluster', 'Organisation detail', 'Capacity reconciliation'])
     with tabs[0]:
         _matrix(data, 'effective_capacity', cluster_ids, years,
@@ -225,7 +244,7 @@ def _supply(raw, allocations, cluster_ids, years, focus):
         fields = ['year', 'cluster_name', *group_cols, 'resource', 'unit', 'series']
         values = ['physical_capacity', 'staffed_capacity', 'funded_capacity', 'effective_capacity']
         grouped = current.groupby(fields, as_index=False)[values].sum()
-        st.dataframe(grouped, use_container_width=True, height=550)
+        _table(grouped, height=550)
         _download('Download annual organisational supply', data.groupby(fields, as_index=False)[values].sum(),
                   'annual_cluster_organisational_supply.csv')
     with tabs[2]:
@@ -233,11 +252,11 @@ def _supply(raw, allocations, cluster_ids, years, focus):
         assigned_total = assigned.groupby(['year', 'cluster_id'], as_index=False).effective_capacity.sum().rename(columns={'effective_capacity': 'allocated_plus_unallocated'})
         check = own.merge(assigned_total, on=['year', 'cluster_id'], how='left')
         check['difference'] = check.owned_capacity - check.allocated_plus_unallocated
-        st.dataframe(check, use_container_width=True)
+        _table(check)
         st.caption('Allocated IPU capacity plus unallocated capacity reconciles to the owned asset register. '
                    'Fractions above 100%, duplicate assets and orphan agreements are rejected on import.')
         with st.expander('Owned asset register for the selected year and resource'):
-            st.dataframe(total_inv, use_container_width=True)
+            _table(total_inv)
         _download('Download supply asset register', inv, 'annual_cluster_supply_assets.csv')
         _download('Download reconciled IPU allocations', assigned, 'annual_cluster_ipu_capacity_allocations.csv')
 
@@ -274,14 +293,14 @@ Mapping keys match exactly on code system, edition and code; one accountable IPU
 Supply `series` is Observed capacity, Planned capacity or Synthetic capacity. `owner_type` is IPU, Network or Platform.
 An asset ID represents one resource/unit within one cluster and year. All numeric capacities are required and nonnegative.
 Allocation fractions range from 0 to 1; their sum per asset must not exceed 1. Missing shares remain Unallocated.''')
-    st.dataframe(pd.DataFrame(UNITS.items(), columns=['resource', 'unit']), use_container_width=True)
+    _table(pd.DataFrame(UNITS.items(), columns=['resource', 'unit']))
     with st.expander('20-cluster reference register'):
-        st.dataframe(clusters(), use_container_width=True)
+        _table(clusters())
         _download('Download cluster register', clusters(), 'cluster_register.csv')
     with st.expander('26-IPU reference portfolio'):
-        st.dataframe(ipus(), use_container_width=True)
+        _table(ipus())
     with st.expander('Loaded code mappings'):
-        st.dataframe(mappings, use_container_width=True)
+        _table(mappings)
         _download('Download loaded mappings', mappings, 'loaded_code_mappings.csv')
     st.caption(f'Loaded rows: demand {len(raw):,}; mappings {len(mappings):,}; '
                f'supply assets {len(supply):,}; allocation agreements {len(allocations):,}. '
