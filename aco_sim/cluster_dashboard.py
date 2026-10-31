@@ -341,13 +341,17 @@ def render(view):
     start, end = st.sidebar.slider('Year range', 2025, 2054, (2025, 2054))
     years = list(range(start, end + 1))
     focus = (st.sidebar.select_slider('Detail year', options=years, value=years[0])
-             if len(years) > 1 and mode != 'Published cluster evidence' and view != 'IPU coverage & gaps'
+             if len(years) > 1 and mode != 'Published cluster evidence' and view not in ['IPU coverage & gaps', 'Demand–supply gap']
              else years[0])
     names = clusters().set_index('cluster_id').cluster_name.to_dict()
     cluster_ids = st.sidebar.multiselect('Clusters (empty = all 20)', list(names), format_func=names.get)
     cluster_ids = cluster_ids or list(names)
     from .presentation import context
     context(mode,len(cluster_ids),years)
+    if mode == 'Published cluster evidence' and view == 'Demand–supply gap':
+        from .gap_dashboard import render_gap
+        render_gap(mode, cluster_ids, years, focus)
+        return
     if mode == 'Published cluster evidence':
         from .published_dashboard import render_published
         if view == 'IPU coverage & gaps' and mode != 'Published cluster evidence':
@@ -360,7 +364,10 @@ def render(view):
         seed = int(st.sidebar.number_input('Simulation seed', 0, 100000, 42))
     try:
         demand, mapping, supply, allocations = _load(mode, seed, integrated)
-        if view == 'Yearly cluster demand':
+        if view == 'Demand–supply gap':
+            from .gap_dashboard import render_gap
+            render_gap(mode, cluster_ids, years, focus, (demand, mapping, supply, allocations), integrated, seed)
+        elif view == 'Yearly cluster demand':
             _demand(demand, mapping, cluster_ids, years, focus)
         elif view == 'Yearly cluster supply':
             _supply(supply, allocations, cluster_ids, years, focus)

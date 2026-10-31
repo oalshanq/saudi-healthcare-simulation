@@ -56,7 +56,7 @@ in `DEPLOYMENT_REPORT.md`.
 # Published evidence update
 
 The default dashboard now loads the public datasets and complete IPU coverage
-views documented in `PUBLISHED_DATA.md`. The build packages 16 application/data
+views documented in `PUBLISHED_DATA.md`. The build packages 18 application/data
 files. Historical 2024 observations, undated HHC profiles, 2025–2054 planning
 gaps, browser-local imports and existing synthetic simulations remain distinct.
 No server-side storage or new hosting service was introduced.
@@ -67,3 +67,7 @@ the complete annual table/export available. IPU coverage uses a labelled status
 grid, source comparisons use separate grouped bars, and simulation/import views
 offer heatmaps and yearly trends. No calculation, source record or data-gap rule
 was changed by the presentation update.
+
+The Demand–supply gap workspace adds compatible resource comparisons, scenario
+controls, explicit coverage and baseline/scenario exports. See GAP_PLANNING.md.
+Original modules remain byte-identical; hosting remains static Stlite.

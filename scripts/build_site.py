@@ -11,7 +11,7 @@ OUT = ROOT / 'dist'
 SOURCE_FILES = ['app.py', 'dashboard.py', 'aco_sim/__init__.py', 'aco_sim/model.py',
                 'aco_sim/cluster_planning.py', 'aco_sim/cluster_dashboard.py',
                 'aco_sim/published_data.py', 'aco_sim/published_dashboard.py',
-                'aco_sim/presentation.py',
+                'aco_sim/presentation.py', 'aco_sim/gap_planning.py', 'aco_sim/gap_dashboard.py',
                 'data/pathways.csv', 'data/clusters.csv', 'browser_entry.py',
                 'data/published_observations.csv', 'data/hhc_capacity_snapshots.csv',
                 'data/published_reconciliation.csv', 'data/published_sources.json']
@@ -63,7 +63,7 @@ def build():
       if (!response.ok) throw new Error('Application files could not be loaded.');
       const manifest = await response.json();
       const files = Object.fromEntries(Object.keys(manifest).map(name =>
-        [name, {url:new URL('./app/' + name, location.href).href}]
+        [name, {url:new URL('./app/' + name + '?v=' + manifest[name].sha256, location.href).href}]
       ));
       const {mount} = await import('https://cdn.jsdelivr.net/npm/@stlite/browser@1.12.0/build/stlite.js');
       mount({
@@ -94,7 +94,7 @@ def build():
                   if f.is_file() and '__pycache__' not in f.parts and f.suffix in ['.py', '.csv', '.txt', '.md']]
         for name in SOURCE_FILES + extra + ['requirements.txt', 'README.md', 'tests/test_model.py',
                                     'tests/test_cluster_planning.py', 'CLUSTER_PLANNING.md',
-                                    'tests/test_published_data.py', 'PUBLISHED_DATA.md', 'scripts/extract_official_data.py',
+                                    'tests/test_published_data.py', 'tests/test_gap_planning.py', 'GAP_PLANNING.md', 'PUBLISHED_DATA.md', 'scripts/extract_official_data.py',
                                     'SOURCE_INTEGRITY.json', 'scripts/build_site.py', 'netlify.toml', 'DEPLOYMENT.md']:
             bundle.write(ROOT / name, name)
     print(f'Packaged {len(SOURCE_FILES)} application and data files in {OUT}')
